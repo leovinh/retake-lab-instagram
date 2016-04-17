@@ -47,12 +47,42 @@ class PhotoViewController: UIViewController, UITableViewDelegate, UITableViewDat
                                                                             if let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(
                                                                                 data, options:[]) as? NSDictionary {
                                                                                 NSLog("response: \(responseDictionary)")
+                                                                                self.mediaData = responseDictionary["data"] as? [NSDictionary]
+                                                                                self.tableView.reloadData()
                                                                             }
                                                                         }
         });
         task.resume()
     }
     
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+       if let data = mediaData {
+            return data.count
+            
+        } else {
+            return 0
+        }
+        
+    }
     
-
-}
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("PhotoCell", forIndexPath: indexPath) as! PhotoCell
+        let photoUrl = mediaData![indexPath.row]["images"]!["standard_resolution"]!!["url"] as! String
+        let avatarUrl = mediaData![indexPath.row]["user"]!["profile_picture"] as! String
+        cell.avatarImg.setImageWithURL(NSURL(string: avatarUrl)!)
+        cell.photoImg.setImageWithURL(NSURL(string: photoUrl)!)
+        
+        return cell
+        }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let vc = segue.destinationViewController as! PhotoDetailsViewController
+        let indexPath = tableView.indexPathForCell(sender as! UITableViewCell)
+        let urlString = mediaData![indexPath!.row]["images"]!["standard_resolution"]!!["url"] as! String
+        vc.url = NSURL(string: urlString)
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        tableView.deselectRowAtIndexPath(indexPath, animated:true)
+    }
+    }

@@ -11,6 +11,9 @@ import UIKit
 class PhotoCell: UITableViewCell {
 
     @IBOutlet weak var photoImg: UIImageView!
+    @IBOutlet weak var avatarImg: UIImageView!
+    @IBOutlet weak var usernameLabel: UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
